@@ -76,11 +76,13 @@ export class VoiceAlert {
  private playCount: Record<string, number> = {};
  private currentGesture: string | null = null;
  private readonly cooldownMs: number;
- private readonly maxPlays = 3;
+ private readonly maxPlays = 2;
  private enabled = true;
  private language: SupportedLanguage;
  private soundEnabled = true;
  private speechQueue: Promise<void> = Promise.resolve();
+ private helpHoldStart = 0;
+ private readonly HELP_HOLD_MS = 2000;
 
  constructor(cooldownMs = 10000) {
    this.cooldownMs = cooldownMs;
@@ -118,6 +120,15 @@ export class VoiceAlert {
    const now = Date.now();
    const last = this.lastSpoken[gestureName] ?? 0;
    if (now - last < this.cooldownMs) return;
+
+   if (gestureName === "HELP") {
+     if (this.helpHoldStart === 0) {
+       this.helpHoldStart = now;
+     }
+     if (now - this.helpHoldStart < this.HELP_HOLD_MS) return;
+   } else {
+     this.helpHoldStart = 0;
+   }
 
    this.lastSpoken[gestureName] = now;
    this.playCount[gestureName] = played + 1;

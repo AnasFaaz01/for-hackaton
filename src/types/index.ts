@@ -51,6 +51,22 @@ export interface GestureLogEntry {
  type: GestureType;
  timestamp: number;
  language: string;
+ acknowledged?: boolean;
+}
+
+export interface ClutchState {
+ paused: boolean;
+ pauseTime: number | null;
+ resumeGesture: "eyes_open" | "palm_open" | null;
+}
+
+export type SensitivityLevel = "high" | "medium" | "low";
+
+export interface SystemDiagnostics {
+ brightness: number;
+ trackingStable: boolean;
+ fps: number;
+ message: string | null;
 }
 
 export interface TTSConfig {

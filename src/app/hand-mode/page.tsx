@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { HiHandRaised, HiMicrophone, HiArrowPath, HiVideoCamera, HiStop } from "react-icons/hi2";
+import { HiHandRaised, HiMicrophone, HiArrowPath, HiVideoCamera, HiStop, HiPause } from "react-icons/hi2";
 import { useHandGesture } from "@/hooks/useHandGesture";
 import { HAND_GESTURE_MAP } from "@/types";
 
@@ -11,12 +11,13 @@ const GESTURE_GUIDE = [
   { label: "HELP", desc: "Index & Pinky Extended", emoji: "🤘" },
   { label: "HELLO", desc: "Waving Hand", emoji: "👋" },
   { label: "WATER", desc: "Both Hands Open", emoji: "🤲" },
+  { label: "PAUSE", desc: "Fist 3s / Open palm to resume", emoji: "✊", cls: "text-amber-400 border-amber-700/30 bg-amber-900/20" },
 ];
 
 export default function HandModePage() {
   const {
     videoRef, canvasRef, gesture, confidence,
-    numHands, loading, error, cameraOn, startCamera, stopCamera,
+    numHands, loading, error, cameraOn, isPaused, startCamera, stopCamera,
   } = useHandGesture();
 
   return (
@@ -35,8 +36,7 @@ export default function HandModePage() {
             Hand Gesture Communication
           </h1>
           <p className="mt-3 text-slate-400 text-lg max-w-2xl mx-auto">
-            Raise your hand and make a gesture. The system detects it, displays the result, and speaks it aloud so
-            caregivers hear it immediately.
+            Raise your hand and make a gesture. Make a fist for 3s to pause, open palm to resume.
           </p>
         </motion.div>
 
@@ -49,6 +49,20 @@ export default function HandModePage() {
               className="max-w-xl mx-auto mb-6 p-4 rounded-2xl bg-red-900/50 border border-red-700/50 text-red-300 text-sm shadow-lg"
             >
               {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isPaused && cameraOn && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="max-w-xl mx-auto mb-4 p-3 rounded-2xl bg-amber-900/40 border border-amber-600/40 text-amber-300 text-sm text-center font-medium shadow-lg flex items-center justify-center gap-2"
+            >
+              <HiPause className="w-4 h-4" />
+              System PAUSED — Open palm to resume
             </motion.div>
           )}
         </AnimatePresence>
@@ -96,8 +110,8 @@ export default function HandModePage() {
 
               {cameraOn && (
                 <div className="absolute top-4 left-4 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-sm text-white/80 text-xs font-medium flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${numHands > 0 ? "bg-green-500" : "bg-yellow-500"}`} />
-                  Hands: {numHands}
+                  <span className={`w-2 h-2 rounded-full ${isPaused ? "bg-amber-500" : numHands > 0 ? "bg-green-500" : "bg-yellow-500"}`} />
+                  {isPaused ? "PAUSED" : `Hands: ${numHands}`}
                 </div>
               )}
             </div>
@@ -111,11 +125,9 @@ export default function HandModePage() {
                   <HiStop className="w-4 h-4" />
                   Stop Camera
                 </button>
-                <span className={`text-sm flex items-center gap-1.5 ${numHands > 0 ? "text-green-400" : "text-slate-500"}`}>
-                  <span className={`w-2 h-2 rounded-full ${numHands > 0 ? "bg-green-500 animate-pulse" : "bg-slate-600"}`} />
-                  {numHands > 0
-                    ? `${numHands} hand${numHands > 1 ? "s" : ""} detected`
-                    : "No hand detected"}
+                <span className={`text-sm flex items-center gap-1.5 ${isPaused ? "text-amber-400" : numHands > 0 ? "text-green-400" : "text-slate-500"}`}>
+                  <span className={`w-2 h-2 rounded-full ${isPaused ? "bg-amber-500" : numHands > 0 ? "bg-green-500 animate-pulse" : "bg-slate-600"}`} />
+                  {isPaused ? "Paused — tracking off" : numHands > 0 ? `${numHands} hand${numHands > 1 ? "s" : ""} detected` : "No hand detected"}
                 </span>
               </div>
             )}
@@ -128,7 +140,7 @@ export default function HandModePage() {
                 <div>
                   <div className="text-sm font-semibold text-slate-200">Voice Alerts Active</div>
                   <div className="text-xs text-slate-500">
-                    Gestures trigger spoken alerts. A 10-second cooldown prevents repetition.
+                    Gestures trigger spoken alerts. HELP requires 2s hold before alert sound.
                   </div>
                 </div>
               </div>
@@ -137,7 +149,20 @@ export default function HandModePage() {
 
           <div className="space-y-6">
             <AnimatePresence mode="wait">
-              {gesture && confidence > 0.5 ? (
+              {isPaused ? (
+                <motion.div
+                  key="paused"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-gradient-to-br from-amber-900/60 to-amber-950/60 rounded-3xl p-8 border border-amber-700/50 shadow-xl text-center"
+                >
+                  <div className="text-6xl mb-2">⏸</div>
+                  <div className="text-2xl font-bold text-amber-300 mb-1">PAUSED</div>
+                  <div className="text-sm text-amber-400/70 mb-5">Tracking suspended</div>
+                  <div className="text-xs text-amber-400/50">Open palm to resume</div>
+                </motion.div>
+              ) : gesture && confidence > 0.5 ? (
                 <motion.div
                   key="result"
                   initial={{ scale: 0.9, opacity: 0 }}
@@ -192,18 +217,27 @@ export default function HandModePage() {
               <div className="space-y-2.5">
                 {GESTURE_GUIDE.map((g) => {
                   const isActive = gesture === g.label;
+                  const isPauseItem = g.label === "PAUSE";
                   return (
                     <div
                       key={g.label}
                       className={`flex items-center justify-between p-2.5 rounded-xl transition-all duration-200 ${
-                        isActive
-                          ? "bg-blue-900/30 border border-blue-700/30 scale-[1.02]"
-                          : "hover:bg-slate-700/30 border border-transparent"
+                        isPauseItem
+                          ? isPaused
+                            ? "bg-amber-900/40 border border-amber-600/40 scale-[1.02]"
+                            : "hover:bg-amber-900/20 border border-transparent"
+                          : isActive
+                            ? "bg-blue-900/30 border border-blue-700/30 scale-[1.02]"
+                            : "hover:bg-slate-700/30 border border-transparent"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
                         <span className="text-lg">{g.emoji}</span>
-                        <span className={`font-bold text-sm ${isActive ? "text-blue-300" : "text-slate-300"}`}>
+                        <span className={`font-bold text-sm ${
+                          isPauseItem
+                            ? isPaused ? "text-amber-300" : "text-slate-400"
+                            : isActive ? "text-blue-300" : "text-slate-300"
+                        }`}>
                           {g.label}
                         </span>
                       </div>

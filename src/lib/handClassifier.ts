@@ -59,6 +59,12 @@ function areFingersSpread(landmarks: Point[]): boolean {
  return spreadCount >= 2;
 }
 
+export function isFist(landmarks: Point[]): boolean {
+  const ratios = getFingerRatios(landmarks);
+  const thumb_ext = dist(landmarks[THUMB_TIP], landmarks[THUMB_MCP]) > dist(landmarks[THUMB_IP], landmarks[THUMB_MCP]) * 1.05;
+  return ratios.every((r) => r < 0.85) && !thumb_ext;
+}
+
 export function classifyHandGesture(
  hands: HandData[]
 ): { gesture: HandGesture; confidence: number } | null {
