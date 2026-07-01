@@ -46,7 +46,7 @@ const GESTURE_PREVIEWS = [
   { gesture: "YES", emoji: "👍", desc: "Thumbs Up" },
   { gesture: "NO", emoji: "👎", desc: "Thumbs Down" },
   { gesture: "HELP", emoji: "🤘", desc: "Index & Pinky Extended" },
-  { gesture: "HELLO", emoji: "👋", desc: "Waving Hand" },
+   { gesture: "PAUSE", emoji: "✊", desc: "Fist / Peace (✌️)" },
   { gesture: "WATER", emoji: "🤲", desc: "Both Hands Open" },
 ];
 
@@ -54,7 +54,7 @@ const EYE_PREVIEWS = [
   { gesture: "YES", emoji: "👁️", desc: "Look Left" },
   { gesture: "NO", emoji: "👁️", desc: "Look Right" },
   { gesture: "HELP", emoji: "👁️", desc: "Double Blink" },
-  { gesture: "WATER", emoji: "👁️", desc: "Look Up / Look Down" },
+  { gesture: "WATER", emoji: "👄", desc: "Open Mouth" },
 ];
 
 const containerVariants = {

@@ -9,7 +9,6 @@ const GESTURE_GUIDE = [
   { label: "YES", desc: "Thumbs Up", emoji: "👍" },
   { label: "NO", desc: "Thumbs Down", emoji: "👎" },
   { label: "HELP", desc: "Index & Pinky Extended", emoji: "🤘" },
-  { label: "HELLO", desc: "Waving Hand", emoji: "👋" },
   { label: "WATER", desc: "Both Hands Open", emoji: "🤲" },
   { label: "PAUSE", desc: "Fist 3s / Peace sign (✌️) to resume", emoji: "✊", cls: "text-amber-400 border-amber-700/30 bg-amber-900/20" },
 ];

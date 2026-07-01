@@ -24,7 +24,6 @@ export type HandGesture =
  | "YES"
  | "NO"
  | "HELP"
- | "HELLO"
  | "WATER"
  | null;
 
@@ -106,7 +105,6 @@ export const HAND_GESTURE_MAP: Record<string, { label: string; description: stri
  YES: { label: "YES", description: "Yes — Patient confirms" },
  NO: { label: "NO", description: "No — Patient refuses" },
  HELP: { label: "HELP", description: "Help — Patient needs immediate assistance" },
- HELLO: { label: "HELLO", description: "Hello — Patient is greeting" },
  WATER: { label: "WATER", description: "Water/Food — Patient needs water or food" },
 };
 

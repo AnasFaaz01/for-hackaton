@@ -90,7 +90,6 @@ export function classifyHandGesture(
  const lm = hands[0].landmarks;
  const ratios = getFingerRatios(lm);
  const thumb = getThumbState(lm);
- const spread = areFingersSpread(lm);
 
  const [idxRatio, midRatio, ringRatio, pinkyRatio] = ratios;
  const idxCurl = idxRatio < 0.95;
@@ -102,7 +101,6 @@ export function classifyHandGesture(
  const ringExt = ringRatio > 1.05;
  const pinkyExt = pinkyRatio > 1.05;
  const allCurled = idxCurl && midCurl && ringCurl && pinkyCurl;
- const allExtended = idxExt && midExt && ringExt && pinkyExt;
 
  if (thumb.extended && thumb.up && allCurled) {
    return { gesture: "YES", confidence: 0.9 };
@@ -114,10 +112,6 @@ export function classifyHandGesture(
 
  if (idxExt && pinkyExt && midCurl && ringCurl) {
    return { gesture: "HELP", confidence: 0.9 };
- }
-
- if (allExtended && spread) {
-   return { gesture: "HELLO", confidence: 0.92 };
  }
 
  return null;
