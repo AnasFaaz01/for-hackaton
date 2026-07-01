@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
-import { classifyHandGesture, HandGestureSmoother, isFist, isPeaceSign } from "@/lib/handClassifier";
+import { classifyHandGesture, HandGestureSmoother, isOpenPalm } from "@/lib/handClassifier";
 import { voiceAlert } from "@/lib/tts";
 import { addGestureLog } from "@/lib/gestureLog";
 import { HandGesture, HandData, HAND_GESTURE_MAP, SystemDiagnostics } from "@/types";
@@ -22,7 +22,8 @@ const FINGER_INDICES = [
   [17, 18, 19, 20],
 ];
 
-const CLUTCH_FIST_MS = 3000;
+const OPEN_PALM_FRAMES_REQUIRED = 3;
+const PAUSE_COOLDOWN_MS = 1000;
 
 export function useHandGesture() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -34,7 +35,8 @@ export function useHandGesture() {
   const lastLoggedGesture = useRef<string | null>(null);
   const restState = useRef({ transitions: 0, windowStart: 0, cooldownUntil: 0 });
 
-  const fistStart = useRef<number>(0);
+  const openPalmFrames = useRef(0);
+  const lastToggleTime = useRef(0);
   const isPausedRef = useRef(false);
 
   const [gesture, setGesture] = useState<HandGesture>(null);
@@ -105,7 +107,8 @@ export function useHandGesture() {
     smootherRef.current.reset();
     lastLoggedGesture.current = null;
     isPausedRef.current = false;
-    fistStart.current = 0;
+    openPalmFrames.current = 0;
+    lastToggleTime.current = 0;
   }, []);
 
   const processFrames = useCallback(() => {
@@ -135,24 +138,36 @@ export function useHandGesture() {
 
     if (hands.length > 0) {
       const lm = hands[0].landmarks;
-      const makingFist = isFist(lm);
+      const palm = isOpenPalm(lm);
+      const nowToggle = Date.now();
+
+      if (palm && nowToggle - lastToggleTime.current > PAUSE_COOLDOWN_MS) {
+        openPalmFrames.current++;
+        if (openPalmFrames.current >= OPEN_PALM_FRAMES_REQUIRED) {
+          lastToggleTime.current = nowToggle;
+          openPalmFrames.current = 0;
+
+          if (isPausedRef.current) {
+            isPausedRef.current = false;
+            setIsPaused(false);
+            setPausedReason(null);
+            smootherRef.current.reset();
+            lastLoggedGesture.current = null;
+            voiceAlert.speakDirect("System resumed");
+          } else {
+            isPausedRef.current = true;
+            setIsPaused(true);
+            setPausedReason("Open palm pause");
+            voiceAlert.speakDirect("System paused");
+          }
+        }
+      } else if (!palm) {
+        openPalmFrames.current = 0;
+      }
 
       if (isPausedRef.current) {
-        const resuming = isPeaceSign(lm);
-
-        if (resuming) {
-          isPausedRef.current = false;
-          setIsPaused(false);
-          setPausedReason(null);
-          smootherRef.current.reset();
-          lastLoggedGesture.current = null;
-          fistStart.current = 0;
-          voiceAlert.speakDirect("System resumed");
-        }
-
         setGesture(null);
         setConfidence(0);
-
         if (canvasRef.current && videoRef.current) {
           const canvas = canvasRef.current;
           const ctx = canvas.getContext("2d");
@@ -175,45 +190,8 @@ export function useHandGesture() {
         animRef.current = requestAnimationFrame(processFrames);
         return;
       }
-
-      if (makingFist) {
-        if (fistStart.current === 0) {
-          fistStart.current = nowMs;
-        } else if (nowMs - fistStart.current >= CLUTCH_FIST_MS) {
-          isPausedRef.current = true;
-          setIsPaused(true);
-          setPausedReason("Fist held for 3 seconds");
-          voiceAlert.speakDirect("System paused");
-          fistStart.current = 0;
-          setGesture(null);
-          setConfidence(0);
-          if (canvasRef.current && videoRef.current) {
-            const canvas = canvasRef.current;
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-              const w = video.videoWidth;
-              const h = video.videoHeight;
-              canvas.width = w;
-              canvas.height = h;
-              ctx.drawImage(video, 0, 0);
-              ctx.fillStyle = "rgba(0,0,0,0.4)";
-              ctx.fillRect(0, 0, w, h);
-              ctx.fillStyle = "rgba(255,255,255,0.6)";
-              ctx.font = "bold 32px sans-serif";
-              ctx.textAlign = "center";
-              ctx.fillText("⏸ PAUSED", w / 2, h / 2 - 20);
-              ctx.font = "18px sans-serif";
-              ctx.fillText("Open palm to resume", w / 2, h / 2 + 30);
-            }
-          }
-          animRef.current = requestAnimationFrame(processFrames);
-          return;
-        }
-      } else {
-        fistStart.current = 0;
-      }
     } else {
-      fistStart.current = 0;
+      openPalmFrames.current = 0;
     }
 
     const raw = classifyHandGesture(hands);
