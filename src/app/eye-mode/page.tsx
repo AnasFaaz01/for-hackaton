@@ -9,7 +9,7 @@ const GESTURE_GUIDE = [
   { label: "YES", desc: "Look Left" },
   { label: "NO", desc: "Look Right" },
   { label: "HELP", desc: "Double Blink (fast)" },
-  { label: "WATER", desc: "Look Up / Look Down" },
+  { label: "WATER", desc: "Open Mouth" },
 ];
 
 export default function EyeModePage() {
@@ -34,7 +34,7 @@ export default function EyeModePage() {
             Eye Gesture Communication
           </h1>
           <p className="mt-3 text-slate-400 text-lg max-w-2xl mx-auto">
-            Use only your eyes — look left, right, up, down, or blink twice. The system detects it
+            Use your eyes and face — look left, right, open your mouth, or blink twice. The system detects it
             and speaks your intent aloud.
           </p>
         </motion.div>

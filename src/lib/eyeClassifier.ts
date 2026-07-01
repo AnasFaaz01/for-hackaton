@@ -6,6 +6,10 @@ const LEFT_EYE_TOP_BOTTOM = [159, 145];
 const RIGHT_EYE_TOP_BOTTOM = [386, 374];
 const LEFT_IRIS = 468;
 const RIGHT_IRIS = 473;
+const UPPER_LIP = 13;
+const LOWER_LIP = 14;
+const NOSE_BRIDGE = 168;
+const CHIN = 152;
 
 function dist(a: Point, b: Point): number {
  return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2);
@@ -29,6 +33,13 @@ function irisOffset(landmarks: Point[], cornerL: number, cornerR: number, iris: 
    x: (landmarks[iris].x - eyeCenter.x) / eyeWidth,
    y: (landmarks[iris].y - eyeCenter.y) / eyeWidth,
  };
+}
+
+function mouthOpenness(landmarks: Point[]): number {
+  const lipGap = dist(landmarks[UPPER_LIP], landmarks[LOWER_LIP]);
+  const faceHeight = dist(landmarks[NOSE_BRIDGE], landmarks[CHIN]);
+  if (faceHeight < 1e-6) return 0;
+  return lipGap / faceHeight;
 }
 
 export type EyeClassifierResult = {
@@ -59,9 +70,9 @@ export function classifyEyeGesture(
  const avgIrisX = (leftIrisOff.x + rightIrisOff.x) / 2;
  const avgIrisY = (leftIrisOff.y + rightIrisOff.y) / 2;
 
- const BLINK_THRESHOLD = 0.22;
- const GAZE_X_THRESHOLD = 0.05;
- const GAZE_Y_THRESHOLD = 0.05;
+  const BLINK_THRESHOLD = 0.22;
+  const GAZE_X_THRESHOLD = 0.05;
+  const MOUTH_OPEN_THRESHOLD = 0.03;
 
  const isBlinking = avgEAR < BLINK_THRESHOLD;
 
@@ -69,22 +80,20 @@ export function classifyEyeGesture(
    return { gesture: null, confidence: 0, isBlinking: true };
  }
 
- if (avgIrisX > GAZE_X_THRESHOLD) {
-   const confidence = Math.min(1, avgIrisX * 10);
-   return { gesture: "YES", confidence, isBlinking: false };
- }
- if (avgIrisX < -GAZE_X_THRESHOLD) {
-   const confidence = Math.min(1, Math.abs(avgIrisX) * 10);
-   return { gesture: "NO", confidence, isBlinking: false };
- }
- if (avgIrisY < -GAZE_Y_THRESHOLD) {
-   const confidence = Math.min(1, Math.abs(avgIrisY) * 10);
-   return { gesture: "WATER", confidence, isBlinking: false };
- }
- if (avgIrisY > GAZE_Y_THRESHOLD) {
-   const confidence = Math.min(1, avgIrisY * 10);
-   return { gesture: "WATER", confidence, isBlinking: false };
- }
+  const mouthOpen = mouthOpenness(faceLandmarks);
+  if (mouthOpen > MOUTH_OPEN_THRESHOLD) {
+    const confidence = Math.min(1, mouthOpen * 15);
+    return { gesture: "WATER", confidence, isBlinking: false };
+  }
+
+  if (avgIrisX > GAZE_X_THRESHOLD) {
+    const confidence = Math.min(1, avgIrisX * 10);
+    return { gesture: "YES", confidence, isBlinking: false };
+  }
+  if (avgIrisX < -GAZE_X_THRESHOLD) {
+    const confidence = Math.min(1, Math.abs(avgIrisX) * 10);
+    return { gesture: "NO", confidence, isBlinking: false };
+  }
 
  return { gesture: null, confidence: 0, isBlinking: false };
 }

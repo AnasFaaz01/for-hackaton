@@ -44,7 +44,7 @@ function getThumbState(landmarks: Point[]): { extended: boolean; up: boolean } {
  const tipDist = dist(landmarks[THUMB_TIP], landmarks[THUMB_MCP]);
  const ipDist = dist(landmarks[THUMB_IP], landmarks[THUMB_MCP]);
  const extended = ipDist > 0 && tipDist > ipDist * 1.05;
- const up = landmarks[THUMB_TIP].y < landmarks[INDEX_MCP].y;
+  const up = landmarks[THUMB_TIP].y < landmarks[THUMB_MCP].y;
  return { extended, up };
 }
 
@@ -110,7 +110,7 @@ export function classifyHandGesture(
  return null;
 }
 
-const SMOOTHING_WINDOW = 12;
+const SMOOTHING_WINDOW = 8;
 const REQUIRED_MAJORITY = 0.75;
 
 export class HandGestureSmoother {
@@ -157,7 +157,7 @@ export class HandGestureSmoother {
 
    const now = Date.now();
    const holdTime = now - this.gestureStartTime;
-   const adjustedConf = this.stableConf * Math.min(1, holdTime / 800);
+    const adjustedConf = this.stableConf * Math.min(1, holdTime / 500);
 
    return { gesture: this.stable, confidence: Math.min(adjustedConf, 1) };
  }
