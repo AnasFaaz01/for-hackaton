@@ -10,7 +10,7 @@ import { EyeGesture, EYE_GESTURE_MAP, SystemDiagnostics } from "@/types";
 const WASM_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm";
 const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task";
 
-const CLUTCH_CLOSE_MS = 3000;
+const CLUTCH_CLOSE_MS = 5000;
 const RESUME_EAR_THRESHOLD = 0.30;
 const JITTER_WINDOW = 10;
 const JITTER_THRESHOLD = 0.003;
@@ -188,7 +188,7 @@ export function useEyeGesture() {
       } else if (nowMs - eyeCloseStart.current >= CLUTCH_CLOSE_MS) {
         isPausedRef.current = true;
         setIsPaused(true);
-        setPausedReason("Eyes closed for 3 seconds");
+        setPausedReason("Eyes closed for 5 seconds");
         voiceAlert.speakDirect("System paused");
         eyeCloseStart.current = 0;
         if (canvasRef.current && videoRef.current) {

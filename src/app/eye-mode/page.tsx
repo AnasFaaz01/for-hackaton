@@ -10,7 +10,7 @@ const GESTURE_GUIDE = [
   { label: "NO", desc: "Look Right" },
   { label: "HELP", desc: "Double Blink (fast)" },
   { label: "WATER", desc: "Open Mouth" },
-  { label: "PAUSE", desc: "Close eyes 3s then open wide to resume", cls: "text-amber-400 border-amber-700/30 bg-amber-900/20" },
+  { label: "PAUSE", desc: "Close eyes 5s then open wide to resume", cls: "text-amber-400 border-amber-700/30 bg-amber-900/20" },
 ];
 
 export default function EyeModePage() {
@@ -35,7 +35,7 @@ export default function EyeModePage() {
             Eye Gesture Communication
           </h1>
           <p className="mt-3 text-slate-400 text-lg max-w-2xl mx-auto">
-            Use your eyes and face — look left, right, open your mouth, or blink twice. Close eyes for 3s to pause.
+             Use your eyes and face — look left, right, open your mouth, or blink twice. Close eyes for 5s to pause.
           </p>
         </motion.div>
 

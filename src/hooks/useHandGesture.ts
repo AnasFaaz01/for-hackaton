@@ -22,7 +22,7 @@ const FINGER_INDICES = [
   [17, 18, 19, 20],
 ];
 
-const OPEN_PALM_FRAMES_REQUIRED = 3;
+const OPEN_PALM_HOLD_MS = 5000;
 const PAUSE_COOLDOWN_MS = 1000;
 
 export function useHandGesture() {
@@ -35,7 +35,7 @@ export function useHandGesture() {
   const lastLoggedGesture = useRef<string | null>(null);
   const restState = useRef({ transitions: 0, windowStart: 0, cooldownUntil: 0 });
 
-  const openPalmFrames = useRef(0);
+  const openPalmStartTime = useRef(0);
   const lastToggleTime = useRef(0);
   const isPausedRef = useRef(false);
 
@@ -107,7 +107,7 @@ export function useHandGesture() {
     smootherRef.current.reset();
     lastLoggedGesture.current = null;
     isPausedRef.current = false;
-    openPalmFrames.current = 0;
+    openPalmStartTime.current = 0;
     lastToggleTime.current = 0;
   }, []);
 
@@ -142,10 +142,11 @@ export function useHandGesture() {
       const nowToggle = Date.now();
 
       if (palm && nowToggle - lastToggleTime.current > PAUSE_COOLDOWN_MS) {
-        openPalmFrames.current++;
-        if (openPalmFrames.current >= OPEN_PALM_FRAMES_REQUIRED) {
+        if (openPalmStartTime.current === 0) {
+          openPalmStartTime.current = nowToggle;
+        } else if (nowToggle - openPalmStartTime.current >= OPEN_PALM_HOLD_MS) {
           lastToggleTime.current = nowToggle;
-          openPalmFrames.current = 0;
+          openPalmStartTime.current = 0;
 
           if (isPausedRef.current) {
             isPausedRef.current = false;
@@ -162,7 +163,7 @@ export function useHandGesture() {
           }
         }
       } else if (!palm) {
-        openPalmFrames.current = 0;
+        openPalmStartTime.current = 0;
       }
 
       if (isPausedRef.current) {
@@ -191,7 +192,7 @@ export function useHandGesture() {
         return;
       }
     } else {
-      openPalmFrames.current = 0;
+      openPalmStartTime.current = 0;
     }
 
     const raw = classifyHandGesture(hands);
