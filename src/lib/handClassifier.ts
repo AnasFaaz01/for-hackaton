@@ -40,12 +40,16 @@ function getFingerRatios(landmarks: Point[]): number[] {
  });
 }
 
-function getThumbState(landmarks: Point[]): { extended: boolean; up: boolean } {
- const tipDist = dist(landmarks[THUMB_TIP], landmarks[THUMB_MCP]);
- const ipDist = dist(landmarks[THUMB_IP], landmarks[THUMB_MCP]);
- const extended = ipDist > 0 && tipDist > ipDist * 1.05;
-  const up = landmarks[THUMB_TIP].y < landmarks[THUMB_MCP].y;
- return { extended, up };
+function getThumbState(landmarks: Point[]): { extended: boolean; up: boolean; down: boolean } {
+  const tipDist = dist(landmarks[THUMB_TIP], landmarks[THUMB_MCP]);
+  const ipDist = dist(landmarks[THUMB_IP], landmarks[THUMB_MCP]);
+  const extended = ipDist > 0 && tipDist > ipDist * 1.05;
+  const hs = handSize(landmarks);
+  const yDiff = landmarks[THUMB_MCP].y - landmarks[THUMB_TIP].y;
+  const threshold = hs * 0.08;
+  const up = yDiff > threshold;
+  const down = yDiff < -threshold;
+  return { extended, up, down };
 }
 
 function areFingersSpread(landmarks: Point[]): boolean {
@@ -110,13 +114,13 @@ export function classifyHandGesture(
  const pinkyExt = pinkyRatio > 1.05;
  const allCurled = idxCurl && midCurl && ringCurl && pinkyCurl;
 
- if (thumb.extended && thumb.up && allCurled) {
-   return { gesture: "YES", confidence: 0.9 };
- }
+  if (thumb.extended && thumb.up && allCurled) {
+    return { gesture: "YES", confidence: 0.9 };
+  }
 
- if (thumb.extended && !thumb.up && allCurled) {
-   return { gesture: "NO", confidence: 0.9 };
- }
+  if (thumb.extended && thumb.down && allCurled) {
+    return { gesture: "NO", confidence: 0.9 };
+  }
 
  if (idxExt && pinkyExt && midCurl && ringCurl) {
    return { gesture: "HELP", confidence: 0.9 };
