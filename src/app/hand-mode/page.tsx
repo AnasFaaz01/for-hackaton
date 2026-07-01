@@ -11,7 +11,7 @@ const GESTURE_GUIDE = [
   { label: "HELP", desc: "Index & Pinky Extended", emoji: "🤘" },
   { label: "HELLO", desc: "Waving Hand", emoji: "👋" },
   { label: "WATER", desc: "Both Hands Open", emoji: "🤲" },
-  { label: "PAUSE", desc: "Fist 3s / Open palm to resume", emoji: "✊", cls: "text-amber-400 border-amber-700/30 bg-amber-900/20" },
+  { label: "PAUSE", desc: "Fist 3s / Peace sign (✌️) to resume", emoji: "✊", cls: "text-amber-400 border-amber-700/30 bg-amber-900/20" },
 ];
 
 export default function HandModePage() {
@@ -36,7 +36,7 @@ export default function HandModePage() {
             Hand Gesture Communication
           </h1>
           <p className="mt-3 text-slate-400 text-lg max-w-2xl mx-auto">
-            Raise your hand and make a gesture. Make a fist for 3s to pause, open palm to resume.
+            Raise your hand and make a gesture. Make a fist for 3s to pause, peace sign (✌️) to resume.
           </p>
         </motion.div>
 
@@ -62,7 +62,7 @@ export default function HandModePage() {
               className="max-w-xl mx-auto mb-4 p-3 rounded-2xl bg-amber-900/40 border border-amber-600/40 text-amber-300 text-sm text-center font-medium shadow-lg flex items-center justify-center gap-2"
             >
               <HiPause className="w-4 h-4" />
-              System PAUSED — Open palm to resume
+              System PAUSED — Show peace sign (✌️) to resume
             </motion.div>
           )}
         </AnimatePresence>
@@ -160,7 +160,7 @@ export default function HandModePage() {
                   <div className="text-6xl mb-2">⏸</div>
                   <div className="text-2xl font-bold text-amber-300 mb-1">PAUSED</div>
                   <div className="text-sm text-amber-400/70 mb-5">Tracking suspended</div>
-                  <div className="text-xs text-amber-400/50">Open palm to resume</div>
+                  <div className="text-xs text-amber-400/50">Show peace sign ✌️ to resume</div>
                 </motion.div>
               ) : gesture && confidence > 0.5 ? (
                 <motion.div

@@ -65,6 +65,13 @@ export function isFist(landmarks: Point[]): boolean {
   return ratios.every((r) => r < 0.85) && !thumb_ext;
 }
 
+export function isPeaceSign(landmarks: Point[]): boolean {
+  const ratios = getFingerRatios(landmarks);
+  const [idxRatio, midRatio, ringRatio, pinkyRatio] = ratios;
+  const thumbExtended = dist(landmarks[THUMB_TIP], landmarks[THUMB_MCP]) > dist(landmarks[THUMB_IP], landmarks[THUMB_MCP]) * 1.05;
+  return idxRatio > 1.05 && midRatio > 1.05 && ringRatio < 0.85 && pinkyRatio < 0.85 && !thumbExtended;
+}
+
 export function classifyHandGesture(
  hands: HandData[]
 ): { gesture: HandGesture; confidence: number } | null {

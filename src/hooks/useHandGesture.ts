@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
-import { classifyHandGesture, HandGestureSmoother, isFist } from "@/lib/handClassifier";
+import { classifyHandGesture, HandGestureSmoother, isFist, isPeaceSign } from "@/lib/handClassifier";
 import { voiceAlert } from "@/lib/tts";
 import { addGestureLog } from "@/lib/gestureLog";
 import { HandGesture, HandData, HAND_GESTURE_MAP, SystemDiagnostics } from "@/types";
@@ -138,14 +138,9 @@ export function useHandGesture() {
       const makingFist = isFist(lm);
 
       if (isPausedRef.current) {
-        const ratios = [8, 12, 16, 20].map((idx) => {
-          const tipDist = Math.sqrt((lm[idx].x - lm[0].x) ** 2 + (lm[idx].y - lm[0].y) ** 2 + (lm[idx].z - lm[0].z) ** 2);
-          const pipDist = Math.sqrt((lm[idx - 2].x - lm[0].x) ** 2 + (lm[idx - 2].y - lm[0].y) ** 2 + (lm[idx - 2].z - lm[0].z) ** 2);
-          return pipDist > 0 ? tipDist / pipDist : 0;
-        });
-        const palmOpen = ratios.every((r) => r > 1.05);
+        const resuming = isPeaceSign(lm);
 
-        if (palmOpen) {
+        if (resuming) {
           isPausedRef.current = false;
           setIsPaused(false);
           setPausedReason(null);
