@@ -44,11 +44,9 @@ function getThumbState(landmarks: Point[]): { extended: boolean; up: boolean; do
   const tipDist = dist(landmarks[THUMB_TIP], landmarks[THUMB_MCP]);
   const ipDist = dist(landmarks[THUMB_IP], landmarks[THUMB_MCP]);
   const extended = ipDist > 0 && tipDist > ipDist * 1.05;
-  const hs = handSize(landmarks);
   const yDiff = landmarks[THUMB_MCP].y - landmarks[THUMB_TIP].y;
-  const threshold = hs * 0.08;
-  const up = yDiff > threshold;
-  const down = yDiff < -threshold;
+  const up = yDiff > 0.005;
+  const down = yDiff < -0.005;
   return { extended, up, down };
 }
 
@@ -80,8 +78,7 @@ export function isOpenPalm(landmarks: Point[]): boolean {
   const ratios = getFingerRatios(landmarks);
   const allExtended = ratios.every((r) => r > 1.05);
   const thumbExtended = dist(landmarks[THUMB_TIP], landmarks[THUMB_MCP]) > dist(landmarks[THUMB_IP], landmarks[THUMB_MCP]) * 1.05;
-  const spread = areFingersSpread(landmarks);
-  return allExtended && thumbExtended && !spread;
+  return allExtended && thumbExtended;
 }
 
 export function classifyHandGesture(

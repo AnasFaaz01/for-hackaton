@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { HandLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
-import { classifyHandGesture, HandGestureSmoother, isPeaceSign } from "@/lib/handClassifier";
+import { classifyHandGesture, HandGestureSmoother, isOpenPalm } from "@/lib/handClassifier";
 import { voiceAlert } from "@/lib/tts";
 import { addGestureLog } from "@/lib/gestureLog";
 import { HandGesture, HandData, HAND_GESTURE_MAP, SystemDiagnostics } from "@/types";
@@ -22,7 +22,7 @@ const FINGER_INDICES = [
   [17, 18, 19, 20],
 ];
 
-const PEACE_HOLD_MS = 5000;
+const PALM_HOLD_MS = 5000;
 const PAUSE_COOLDOWN_MS = 1000;
 
 export function useHandGesture() {
@@ -35,7 +35,7 @@ export function useHandGesture() {
   const lastLoggedGesture = useRef<string | null>(null);
   const restState = useRef({ transitions: 0, windowStart: 0, cooldownUntil: 0 });
 
-  const peaceStartTime = useRef(0);
+  const palmStartTime = useRef(0);
   const lastToggleTime = useRef(0);
   const isPausedRef = useRef(false);
 
@@ -107,7 +107,7 @@ export function useHandGesture() {
     smootherRef.current.reset();
     lastLoggedGesture.current = null;
     isPausedRef.current = false;
-    peaceStartTime.current = 0;
+    palmStartTime.current = 0;
     lastToggleTime.current = 0;
   }, []);
 
@@ -138,15 +138,15 @@ export function useHandGesture() {
 
     if (hands.length > 0) {
       const lm = hands[0].landmarks;
-      const peace = isPeaceSign(lm);
+      const palm = isOpenPalm(lm);
       const nowToggle = Date.now();
 
-      if (peace && nowToggle - lastToggleTime.current > PAUSE_COOLDOWN_MS) {
-        if (peaceStartTime.current === 0) {
-          peaceStartTime.current = nowToggle;
-        } else if (nowToggle - peaceStartTime.current >= PEACE_HOLD_MS) {
+      if (palm && nowToggle - lastToggleTime.current > PAUSE_COOLDOWN_MS) {
+        if (palmStartTime.current === 0) {
+          palmStartTime.current = nowToggle;
+        } else if (nowToggle - palmStartTime.current >= PALM_HOLD_MS) {
           lastToggleTime.current = nowToggle;
-          peaceStartTime.current = 0;
+          palmStartTime.current = 0;
 
           if (isPausedRef.current) {
             isPausedRef.current = false;
@@ -158,12 +158,12 @@ export function useHandGesture() {
           } else {
             isPausedRef.current = true;
             setIsPaused(true);
-            setPausedReason("Peace sign pause");
+            setPausedReason("Open palm pause");
             voiceAlert.speakDirect("System paused");
           }
         }
-      } else if (!peace) {
-        peaceStartTime.current = 0;
+      } else if (!palm) {
+        palmStartTime.current = 0;
       }
 
       if (isPausedRef.current) {
@@ -185,14 +185,14 @@ export function useHandGesture() {
             ctx.textAlign = "center";
             ctx.fillText("⏸ PAUSED", w / 2, h / 2 - 20);
             ctx.font = "18px sans-serif";
-            ctx.fillText("Peace sign to resume", w / 2, h / 2 + 30);
+            ctx.fillText("Open palm to resume", w / 2, h / 2 + 30);
           }
         }
         animRef.current = requestAnimationFrame(processFrames);
         return;
       }
     } else {
-      peaceStartTime.current = 0;
+      palmStartTime.current = 0;
     }
 
     const raw = classifyHandGesture(hands);
