@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HiEye, HiMicrophone, HiArrowPath, HiVideoCamera, HiStop, HiPause } from "react-icons/hi2";
 import { useEyeGesture } from "@/hooks/useEyeGesture";
 import { EYE_GESTURE_MAP } from "@/types";
+import { voiceAlert } from "@/lib/tts";
 
 const GESTURE_GUIDE = [
   { label: "YES", desc: "Look Left" },
@@ -188,7 +189,7 @@ export default function EyeModePage() {
                   </div>
                   <div className="mt-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-900/30 text-green-400 text-xs font-medium border border-green-700/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                    Speaking alert...
+                    Gesture detected
                   </div>
                 </motion.div>
               ) : (
@@ -246,11 +247,8 @@ export default function EyeModePage() {
 
             <button
               onClick={() => {
-                const entry = gesture ? EYE_GESTURE_MAP[gesture] : null;
-                if (entry && typeof window !== "undefined" && window.speechSynthesis) {
-                  window.speechSynthesis.cancel();
-                  const u = new SpeechSynthesisUtterance(entry.description);
-                  window.speechSynthesis.speak(u);
+                if (gesture) {
+                  voiceAlert.speak(gesture, "eye");
                 }
               }}
               disabled={!gesture}

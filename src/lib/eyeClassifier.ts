@@ -15,6 +15,8 @@ function dist(a: Point, b: Point): number {
  return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2);
 }
 
+let blinkHysteresisActive = false;
+
 function eyeAspectRatio(landmarks: Point[], cornerL: number, cornerR: number, top: number, bottom: number): number {
  const eyeWidth = dist(landmarks[cornerL], landmarks[cornerR]);
  const eyeHeight = dist(landmarks[top], landmarks[bottom]);
@@ -67,49 +69,52 @@ export function classifyEyeGesture(
 
  const leftIrisOff = irisOffset(faceLandmarks, LEFT_EYE_CORNERS[0], LEFT_EYE_CORNERS[1], LEFT_IRIS);
  const rightIrisOff = irisOffset(faceLandmarks, RIGHT_EYE_CORNERS[0], RIGHT_EYE_CORNERS[1], RIGHT_IRIS);
- const avgIrisX = (leftIrisOff.x + rightIrisOff.x) / 2;
- const avgIrisY = (leftIrisOff.y + rightIrisOff.y) / 2;
+  const avgIrisX = (leftIrisOff.x + rightIrisOff.x) / 2;
 
-  const BLINK_THRESHOLD = 0.22;
+  const BLINK_CLOSE = 0.22;
+  const BLINK_OPEN = 0.28;
   const GAZE_X_THRESHOLD = 0.05;
-  const MOUTH_OPEN_THRESHOLD = 0.03;
+  const MOUTH_OPEN_THRESHOLD = 0.08;
 
- const isBlinking = avgEAR < BLINK_THRESHOLD;
+  const isBlinking = blinkHysteresisActive ? avgEAR < BLINK_OPEN : avgEAR < BLINK_CLOSE;
+  blinkHysteresisActive = isBlinking;
 
- if (isBlinking) {
-   return { gesture: null, confidence: 0, isBlinking: true };
- }
-
-  const mouthOpen = mouthOpenness(faceLandmarks);
-  if (mouthOpen > MOUTH_OPEN_THRESHOLD) {
-    const confidence = Math.min(1, mouthOpen * 15);
-    return { gesture: "WATER", confidence, isBlinking: false };
+  if (isBlinking) {
+    return { gesture: null, confidence: 0, isBlinking: true };
   }
 
-  if (avgIrisX > GAZE_X_THRESHOLD) {
-    const confidence = Math.min(1, avgIrisX * 10);
-    return { gesture: "YES", confidence, isBlinking: false };
-  }
   if (avgIrisX < -GAZE_X_THRESHOLD) {
     const confidence = Math.min(1, Math.abs(avgIrisX) * 10);
+    return { gesture: "YES", confidence, isBlinking: false };
+  }
+  if (avgIrisX > GAZE_X_THRESHOLD) {
+    const confidence = Math.min(1, avgIrisX * 10);
     return { gesture: "NO", confidence, isBlinking: false };
   }
 
- return { gesture: null, confidence: 0, isBlinking: false };
+  const mouthOpen = mouthOpenness(faceLandmarks);
+  if (mouthOpen > MOUTH_OPEN_THRESHOLD) {
+    const confidence = Math.min(1, Math.max(0, mouthOpen - 0.08) * 12);
+    return { gesture: "WATER", confidence, isBlinking: false };
+  }
+
+  return { gesture: null, confidence: 0, isBlinking: false };
 }
 
 export class EyeGestureSmoother {
- private gazeBuffer: EyeClassifierResult[] = [];
- private blinkStartTime = 0;
- private blinkCount = 0;
- private lastBlinkEndTime = 0;
- private stableGesture: EyeGesture = null;
- private stableConf = 0;
+  private gazeBuffer: EyeClassifierResult[] = [];
+  private blinkStartTime = 0;
+  private blinkCount = 0;
+  private lastBlinkEndTime = 0;
+  private stableGesture: EyeGesture = null;
+  private stableConf = 0;
+  private helpCooldownUntil = 0;
 
- private readonly DOUBLE_BLINK_WINDOW = 1500;
- private readonly SMOOTHING_FRAMES = 12;
- private readonly HOLD_TIME_MS = 800;
- private gazeStartTime = 0;
+  private readonly DOUBLE_BLINK_WINDOW = 700;
+  private readonly SMOOTHING_FRAMES = 12;
+  private readonly HOLD_TIME_MS = 800;
+  private readonly HELP_COOLDOWN_MS = 2000;
+  private gazeStartTime = 0;
 
  private adjustedConfidence(): { gesture: EyeGesture; confidence: number } {
    const holdTime = Date.now() - this.gazeStartTime;
@@ -129,30 +134,30 @@ export class EyeGestureSmoother {
      return this.adjustedConfidence();
    }
 
-   if (this.blinkStartTime > 0) {
-     const blinkDuration = now - this.blinkStartTime;
-     this.blinkStartTime = 0;
+    if (this.blinkStartTime > 0) {
+      this.blinkStartTime = 0;
 
-     if (blinkDuration < 100) {
-       return this.adjustedConfidence();
-     }
+      if (now < this.helpCooldownUntil) {
+        return this.adjustedConfidence();
+      }
 
-     if (this.lastBlinkEndTime > 0 && now - this.lastBlinkEndTime < this.DOUBLE_BLINK_WINDOW) {
-       this.blinkCount++;
-     } else {
-       this.blinkCount = 1;
-     }
-     this.lastBlinkEndTime = now;
+      if (this.lastBlinkEndTime > 0 && now - this.lastBlinkEndTime < this.DOUBLE_BLINK_WINDOW) {
+        this.blinkCount++;
+      } else {
+        this.blinkCount = 1;
+      }
+      this.lastBlinkEndTime = now;
 
-     if (this.blinkCount >= 2) {
-       this.stableGesture = "HELP";
-       this.stableConf = 0.85;
-       this.gazeStartTime = now;
-       this.blinkCount = 0;
-       this.gazeBuffer = [];
-       return this.adjustedConfidence();
-     }
-   }
+      if (this.blinkCount >= 2) {
+        this.stableGesture = "HELP";
+        this.stableConf = 0.85;
+        this.gazeStartTime = now;
+        this.helpCooldownUntil = now + this.HELP_COOLDOWN_MS;
+        this.blinkCount = 0;
+        this.gazeBuffer = [];
+        return this.adjustedConfidence();
+      }
+    }
 
    {
      this.gazeBuffer.push(result ?? { gesture: null, confidence: 0, isBlinking: false });
@@ -193,13 +198,14 @@ export class EyeGestureSmoother {
    return this.adjustedConfidence();
  }
 
- reset() {
-   this.gazeBuffer = [];
-   this.blinkStartTime = 0;
-   this.blinkCount = 0;
-   this.lastBlinkEndTime = 0;
-   this.stableGesture = null;
-   this.stableConf = 0;
-   this.gazeStartTime = 0;
- }
+  reset() {
+    this.gazeBuffer = [];
+    this.blinkStartTime = 0;
+    this.blinkCount = 0;
+    this.lastBlinkEndTime = 0;
+    this.stableGesture = null;
+    this.stableConf = 0;
+    this.gazeStartTime = 0;
+    this.helpCooldownUntil = 0;
+  }
 }

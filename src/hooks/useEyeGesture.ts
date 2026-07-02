@@ -12,8 +12,6 @@ const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/face_landmark
 
 const CLUTCH_CLOSE_MS = 5000;
 const RESUME_EAR_THRESHOLD = 0.30;
-const JITTER_WINDOW = 10;
-const JITTER_THRESHOLD = 0.003;
 
 export function useEyeGesture() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -27,11 +25,6 @@ export function useEyeGesture() {
 
   const eyeCloseStart = useRef<number>(0);
   const isPausedRef = useRef(false);
-  const prevIrisOffsets = useRef<{ x: number; y: number }[]>([]);
-  const lastIrisX = useRef(0);
-  const lastIrisY = useRef(0);
-  const helpHoldStart = useRef(0);
-  const wasBlinkingPrev = useRef(false);
 
   const [gesture, setGesture] = useState<EyeGesture>(null);
   const [confidence, setConfidence] = useState(0);
@@ -149,7 +142,7 @@ export function useEyeGesture() {
         })();
         const avgEAR = (leftEAR + rightEAR) / 2;
 
-        if (avgEAR > RESUME_EAR_THRESHOLD && faceDetected) {
+        if (avgEAR > RESUME_EAR_THRESHOLD) {
           isPausedRef.current = false;
           setIsPaused(false);
           setPausedReason(null);
@@ -216,7 +209,6 @@ export function useEyeGesture() {
     } else {
       eyeCloseStart.current = 0;
     }
-    wasBlinkingPrev.current = isBlinkingFrame;
 
     const smoothed = smootherRef.current.push(raw);
     setGesture(smoothed.gesture);
