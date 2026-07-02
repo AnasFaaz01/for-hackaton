@@ -80,9 +80,7 @@ export class VoiceAlert {
  private enabled = true;
  private language: SupportedLanguage;
  private soundEnabled = true;
- private speechQueue: Promise<void> = Promise.resolve();
- private helpHoldStart = 0;
- private readonly HELP_HOLD_MS = 2000;
+  private speechQueue: Promise<void> = Promise.resolve();
 
  constructor(cooldownMs = 10000) {
    this.cooldownMs = cooldownMs;
@@ -121,14 +119,7 @@ export class VoiceAlert {
    const last = this.lastSpoken[gestureName] ?? 0;
    if (now - last < this.cooldownMs) return;
 
-   if (gestureName === "HELP") {
-     if (this.helpHoldStart === 0) {
-       this.helpHoldStart = now;
-     }
-     if (now - this.helpHoldStart < this.HELP_HOLD_MS) return;
-   } else {
-     this.helpHoldStart = 0;
-   }
+
 
    this.lastSpoken[gestureName] = now;
    this.playCount[gestureName] = played + 1;
