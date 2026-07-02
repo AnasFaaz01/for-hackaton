@@ -135,10 +135,9 @@ export class VoiceAlert {
 
    const description = getDescription(gestureName, this.language);
 
-   const urgentOnly = ["HELP", "EMERGENCY"];
-   if (this.soundEnabled && urgentOnly.includes(gestureName)) {
-     playAlertSound(gestureName);
-   }
+    if (this.soundEnabled) {
+      playAlertSound(gestureName);
+    }
 
    this.speechQueue = this.speechQueue.then(() => doSpeak(description, this.language));
  }

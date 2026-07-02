@@ -109,11 +109,13 @@ export class EyeGestureSmoother {
   private stableGesture: EyeGesture = null;
   private stableConf = 0;
   private helpCooldownUntil = 0;
+  private freezeUntil = 0;
 
   private readonly DOUBLE_BLINK_WINDOW = 700;
   private readonly SMOOTHING_FRAMES = 12;
   private readonly HOLD_TIME_MS = 800;
-  private readonly HELP_COOLDOWN_MS = 2000;
+  private readonly HELP_LOCK_MS = 2000;
+  private readonly HELP_BLINK_COOLDOWN_MS = 2000;
   private gazeStartTime = 0;
 
  private adjustedConfidence(): { gesture: EyeGesture; confidence: number } {
@@ -152,15 +154,20 @@ export class EyeGestureSmoother {
         this.stableGesture = "HELP";
         this.stableConf = 0.85;
         this.gazeStartTime = now;
-        this.helpCooldownUntil = now + this.HELP_COOLDOWN_MS;
+        this.helpCooldownUntil = now + this.HELP_BLINK_COOLDOWN_MS;
+        this.freezeUntil = now + this.HELP_LOCK_MS;
         this.blinkCount = 0;
         this.gazeBuffer = [];
         return this.adjustedConfidence();
       }
     }
 
+    if (now < this.freezeUntil) {
+      return this.adjustedConfidence();
+    }
+
    {
-     this.gazeBuffer.push(result ?? { gesture: null, confidence: 0, isBlinking: false });
+      this.gazeBuffer.push(result ?? { gesture: null, confidence: 0, isBlinking: false });
      if (this.gazeBuffer.length > this.SMOOTHING_FRAMES) this.gazeBuffer.shift();
 
      const counts = new Map<string, { count: number; confs: number[] }>();
@@ -207,5 +214,6 @@ export class EyeGestureSmoother {
     this.stableConf = 0;
     this.gazeStartTime = 0;
     this.helpCooldownUntil = 0;
+    this.freezeUntil = 0;
   }
 }
