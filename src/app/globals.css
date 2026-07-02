@@ -1,45 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-med-50: #eef2ff;
-  --color-med-100: #dce2f8;
-  --color-med-200: #bcc8ee;
-  --color-med-300: #8da3df;
-  --color-med-400: #5e7acb;
-  --color-med-500: #3b5bb8;
-  --color-med-600: #2d4494;
-  --color-med-700: #263778;
-  --color-med-800: #223164;
-  --color-med-900: #1f2b51;
-
   --color-teal-50: #ecfdf5;
   --color-teal-100: #d1fae5;
   --color-teal-200: #a7f3d0;
   --color-teal-300: #6ee7b7;
   --color-teal-400: #34d399;
   --color-teal-500: #10b981;
-  --color-teal-600: #059669;
-  --color-teal-700: #047857;
-  --color-teal-800: #065f46;
-  --color-teal-900: #064e3b;
-
-  --color-warm-50: #faf8f6;
-  --color-warm-100: #f0ebe5;
-  --color-warm-200: #ddd2c6;
-  --color-warm-300: #c0aea0;
-  --color-warm-400: #a08878;
-  --color-warm-500: #846c5c;
-  --color-warm-600: #6a5548;
-  --color-warm-700: #56443a;
-  --color-warm-800: #473930;
-  --color-warm-900: #3b3029;
+  --color-teal-600: #0d9488;
+  --color-teal-700: #0f766e;
+  --color-teal-800: #115e59;
+  --color-teal-900: #134e4a;
 
   --font-family-sans: "Inter", "system-ui", "sans-serif";
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 4rem;
 }
 
 body {
@@ -49,74 +27,64 @@ body {
 }
 
 ::selection {
-  background: rgba(59, 91, 184, 0.3);
-  color: white;
+  background: rgba(13, 148, 136, 0.15);
+  color: #0f172a;
 }
 
 .nav-blur {
-  background: rgba(13, 18, 30, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.hero-overlay {
-  background: linear-gradient(
-    135deg,
-    rgba(10, 15, 28, 0.88) 0%,
-    rgba(10, 15, 28, 0.55) 40%,
-    rgba(10, 15, 28, 0.75) 70%,
-    rgba(10, 15, 28, 0.92) 100%
-  );
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .section-card {
-  background: rgba(20, 28, 48, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 1.25rem;
-  transition: border-color 0.25s ease, box-shadow 0.3s ease;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .section-card:hover {
-  border-color: rgba(59, 91, 184, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 .stat-card {
-  background: rgba(20, 28, 48, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 1rem;
-}
-
-.medical-gradient {
-  background: linear-gradient(135deg, #1a2744 0%, #0d1420 100%);
-}
-
-.heartbeat-line {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(59, 91, 184, 0.3), transparent);
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
 }
 
 .text-balance {
   text-wrap: balance;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+.hero-video-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.88) 0%,
+    rgba(248, 250, 252, 0.4) 40%,
+    rgba(248, 250, 252, 0.3) 60%,
+    rgba(248, 250, 252, 0.85) 100%
+  );
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(59, 91, 184, 0.2);
-  border-radius: 2px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 91, 184, 0.4);
+
+.hero-video-overlay-right {
+  background: linear-gradient(
+    90deg,
+    rgba(248, 250, 252, 0.9) 0%,
+    rgba(248, 250, 252, 0.1) 60%,
+    transparent 100%
+  );
 }
 
 .dashboard-card {
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.2) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 1.25rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+}
+
+input::placeholder {
+  color: #94a3b8;
 }

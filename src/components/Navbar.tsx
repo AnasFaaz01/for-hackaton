@@ -33,12 +33,12 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           <a href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center transition-colors duration-200">
+            <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
               <span className="text-white font-bold text-xs tracking-tight">CS</span>
             </div>
             <div className="hidden sm:block">
-              <span className="font-semibold text-white text-base tracking-tight">CareSpeak</span>
-              <span className="text-teal-400 font-semibold text-base"> AI</span>
+              <span className="font-semibold text-slate-900 text-base tracking-tight">CareSpeak</span>
+              <span className="text-teal-600 font-semibold text-base"> AI</span>
             </div>
           </a>
 
@@ -51,11 +51,11 @@ export default function Navbar() {
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? link.highlight
-                        ? "bg-red-500/10 text-red-400"
-                        : "bg-med-500/10 text-med-400"
+                        ? "bg-red-50 text-red-600"
+                        : "bg-teal-50 text-teal-700"
                       : link.highlight
-                      ? "text-slate-500 hover:text-red-400 hover:bg-red-500/5"
-                      : "text-slate-500 hover:text-slate-200 hover:bg-white/5"
+                      ? "text-slate-500 hover:text-red-600 hover:bg-red-50"
+                      : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -69,7 +69,7 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-all duration-200"
+                className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all duration-200"
               >
                 <span className="text-xs">{currentLangInfo.native}</span>
                 <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} />
@@ -80,16 +80,16 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: -6, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                    className="absolute right-0 top-full mt-1.5 w-44 rounded-xl bg-[#0f172a] border border-white/10 shadow-xl shadow-black/40 py-1 z-50"
+                    className="absolute right-0 top-full mt-1.5 w-44 rounded-xl bg-white border border-slate-200 shadow-lg py-1 z-50"
                   >
                     {(Object.entries(SUPPORTED_LANGUAGES) as [SupportedLanguage, { label: string; native: string }][]).map(([code, info]) => (
                       <button key={code} onClick={() => handleLanguageChange(code)}
                         className={`w-full text-left px-3.5 py-2 text-xs transition-colors flex items-center gap-2 ${
-                          currentLang === code ? "text-teal-400 bg-teal-500/10 font-medium" : "text-slate-500 hover:text-slate-200 hover:bg-white/5"
+                          currentLang === code ? "text-teal-700 bg-teal-50 font-medium" : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                         }`}
                       >
                         <span>{info.native}</span>
-                        <span className="text-slate-700 text-[10px]">{info.label}</span>
+                        <span className="text-slate-400 text-[10px]">{info.label}</span>
                       </button>
                     ))}
                   </motion.div>
@@ -99,7 +99,7 @@ export default function Navbar() {
 
             <button
               onClick={() => setOpen(!open)}
-              className="lg:hidden p-2 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-all duration-200"
+              className="lg:hidden p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all duration-200"
             >
               {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
@@ -113,7 +113,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden border-t border-white/5 bg-[#0a0f1c]"
+            className="lg:hidden border-t border-slate-200 bg-white"
           >
             <div className="px-4 py-2 space-y-0.5">
               {NAV_LINKS.map((link) => {
@@ -123,8 +123,8 @@ export default function Navbar() {
                   <a key={link.href} href={link.href} onClick={() => setOpen(false)}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? link.highlight ? "bg-red-500/10 text-red-400" : "bg-med-500/10 text-med-400"
-                        : "text-slate-500 hover:text-slate-200 hover:bg-white/5"
+                        ? link.highlight ? "bg-red-50 text-red-600" : "bg-teal-50 text-teal-700"
+                        : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
