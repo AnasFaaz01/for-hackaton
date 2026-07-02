@@ -4,11 +4,11 @@ import Navbar from "@/components/Navbar";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
-  title: "CareSpeak AI — Giving Every Patient a Voice",
+  title: "CareSpeak AI — Assistive Communication for Non-Verbal Patients",
   description:
-    "AI-powered communication for patients who cannot speak or move easily. Use hand gestures or eye movements to express needs — instantly converted to text and speech.",
+    "On-device AI that turns any laptop webcam into an assistive communication tool. Patients who cannot speak can use hand gestures or eye movements to express needs — instantly converted to spoken voice alerts. No servers, no setup, no cost.",
   other: {
-    "theme-color": "#0f172a",
+    "theme-color": "#0a0f1c",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
     "apple-mobile-web-app-title": "CareSpeak AI",
@@ -24,68 +24,72 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-screen bg-slate-950 text-white antialiased">
+      <body className="min-h-screen bg-[#0a0f1c] text-slate-200 antialiased">
         <ServiceWorkerRegister />
         <Navbar />
         <main className="min-h-screen">{children}</main>
-        <footer className="border-t border-white/5 bg-slate-950 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <footer className="border-t border-white/5 bg-[#080c17]">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8 py-16">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <span className="text-white font-extrabold text-sm tracking-tight">CS</span>
+                  <div className="w-9 h-9 rounded-lg bg-teal-600 flex items-center justify-center">
+                    <span className="text-white font-bold text-xs tracking-tight">CS</span>
                   </div>
-                  <span className="font-bold text-lg text-white">CareSpeak</span>
-                  <span className="text-indigo-400 font-bold text-lg">AI</span>
+                  <div>
+                    <span className="font-bold text-base text-white">CareSpeak</span>
+                    <span className="text-teal-400 font-bold text-base"> AI</span>
+                  </div>
                 </div>
-                <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-                  Turning any laptop into an assistive communication device. 
-                  On-device AI translates hand gestures and eye movements into speech — 
-                  no servers, no setup, no expensive hardware.
+                <p className="text-sm text-slate-500 leading-relaxed max-w-md">
+                  On-device AI assistive communication for patients who cannot speak. 
+                  Free for all healthcare use. No data leaves the device.
                 </p>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-widest mb-4">Product</h4>
-                <div className="space-y-3">
+                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Modes</h4>
+                <div className="space-y-2.5">
                   {[
-                    { href: "/hand-mode", label: "Hand Mode" },
-                    { href: "/eye-mode", label: "Eye Mode" },
+                    { href: "/hand-mode", label: "Hand Gesture Mode" },
+                    { href: "/eye-mode", label: "Eye Tracking Mode" },
                     { href: "/nurse-view", label: "Nurse Dashboard" },
-                    { href: "/emergency", label: "Emergency" },
                   ].map((link) => (
                     <a key={link.href} href={link.href}
-                      className="block text-sm text-slate-500 hover:text-indigo-400 transition-colors"
+                      className="block text-sm text-slate-600 hover:text-teal-400 transition-colors"
                     >{link.label}</a>
                   ))}
                 </div>
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-widest mb-4">Resources</h4>
-                <div className="space-y-3">
+                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Resources</h4>
+                <div className="space-y-2.5">
                   {[
                     { href: "/about", label: "About" },
-                    { href: "/logs", label: "Gesture Logs" },
+                    { href: "/logs", label: "Gesture History" },
+                    { href: "/emergency", label: "Emergency Alert" },
                   ].map((link) => (
                     <a key={link.href} href={link.href}
-                      className="block text-sm text-slate-500 hover:text-indigo-400 transition-colors"
+                      className="block text-sm text-slate-600 hover:text-teal-400 transition-colors"
                     >{link.label}</a>
                   ))}
                 </div>
               </div>
             </div>
             <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="text-sm text-slate-600">
-                &copy; {new Date().getFullYear()} CareSpeak AI. Giving every patient a voice.
+              <div className="text-xs text-slate-700">
+                &copy; {new Date().getFullYear()} CareSpeak AI.
               </div>
-              <div className="flex items-center gap-4 text-xs text-slate-600">
-                <span>100% on-device &middot; no data leaves your browser</span>
-                <span>Free &amp; open source</span>
+              <div className="flex items-center gap-4 text-xs text-slate-700">
+                <span>100% on-device processing</span>
+                <span className="w-1 h-1 rounded-full bg-slate-700" />
+                <span>Free for healthcare</span>
+                <span className="w-1 h-1 rounded-full bg-slate-700" />
+                <span>Open source</span>
               </div>
             </div>
           </div>
