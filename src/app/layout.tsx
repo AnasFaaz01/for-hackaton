@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "AI-powered communication for patients who cannot speak or move easily. Use hand gestures or eye movements to express needs — instantly converted to text and speech.",
   other: {
-    "theme-color": "#1e3a8a",
+    "theme-color": "#0f172a",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
     "apple-mobile-web-app-title": "CareSpeak AI",
@@ -24,36 +24,69 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-screen bg-white text-gray-900 antialiased">
+      <body className="min-h-screen bg-slate-950 text-white antialiased">
         <ServiceWorkerRegister />
         <Navbar />
         <main className="min-h-screen">{children}</main>
-        <footer className="border-t border-gray-100 bg-white py-12">
+        <footer className="border-t border-white/5 bg-slate-950 py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">CS</span>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+              <div className="md:col-span-2">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <span className="text-white font-extrabold text-sm tracking-tight">CS</span>
+                  </div>
+                  <span className="font-bold text-lg text-white">CareSpeak</span>
+                  <span className="text-indigo-400 font-bold text-lg">AI</span>
                 </div>
-                <span className="font-semibold text-gray-700">CareSpeak AI</span>
+                <p className="text-slate-400 text-sm leading-relaxed max-w-md">
+                  Turning any laptop into an assistive communication device. 
+                  On-device AI translates hand gestures and eye movements into speech — 
+                  no servers, no setup, no expensive hardware.
+                </p>
               </div>
-              <div className="flex items-center gap-6 text-sm text-gray-500">
-                <a href="/" className="hover:text-blue-600 transition-colors">Home</a>
-                <a href="/hand-mode" className="hover:text-blue-600 transition-colors">Hand</a>
-                <a href="/eye-mode" className="hover:text-blue-600 transition-colors">Eye</a>
-                <a href="/nurse-view" className="hover:text-rose-600 transition-colors">Nurse</a>
-                <a href="/logs" className="hover:text-blue-600 transition-colors">Logs</a>
-                <a href="/about" className="hover:text-blue-600 transition-colors">About</a>
-                <a href="/emergency" className="hover:text-red-600 transition-colors">Emergency</a>
+              <div>
+                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-widest mb-4">Product</h4>
+                <div className="space-y-3">
+                  {[
+                    { href: "/hand-mode", label: "Hand Mode" },
+                    { href: "/eye-mode", label: "Eye Mode" },
+                    { href: "/nurse-view", label: "Nurse Dashboard" },
+                    { href: "/emergency", label: "Emergency" },
+                  ].map((link) => (
+                    <a key={link.href} href={link.href}
+                      className="block text-sm text-slate-500 hover:text-indigo-400 transition-colors"
+                    >{link.label}</a>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-widest mb-4">Resources</h4>
+                <div className="space-y-3">
+                  {[
+                    { href: "/about", label: "About" },
+                    { href: "/logs", label: "Gesture Logs" },
+                  ].map((link) => (
+                    <a key={link.href} href={link.href}
+                      className="block text-sm text-slate-500 hover:text-indigo-400 transition-colors"
+                    >{link.label}</a>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="mt-8 pt-8 border-t border-gray-100 text-center text-sm text-gray-400">
-              Built with care for Hackathon 2026 — Giving every patient a voice.
+            <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-slate-600">
+                &copy; {new Date().getFullYear()} CareSpeak AI. Giving every patient a voice.
+              </div>
+              <div className="flex items-center gap-4 text-xs text-slate-600">
+                <span>100% on-device &middot; no data leaves your browser</span>
+                <span>Free &amp; open source</span>
+              </div>
             </div>
           </div>
         </footer>

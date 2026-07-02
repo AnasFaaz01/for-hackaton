@@ -1,63 +1,75 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { HiShieldCheck, HiBolt, HiDevicePhoneMobile, HiGlobeAlt, HiHeart, HiAcademicCap } from "react-icons/hi2";
+import { ShieldCheck, Zap, Globe, Heart, Cpu, Sparkles, Activity, Eye, Volume2, Server, Lock, Languages } from "lucide-react";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const } },
+};
 
 const TECH_STACK = [
-  { name: "Next.js 15", desc: "App Router, React 19, TypeScript 5.8" },
-  { name: "MediaPipe", desc: "Hand & face landmark detection via WASM" },
-  { name: "Web Speech API", desc: "Browser-native text-to-speech" },
-  { name: "Web Audio API", desc: "Synthesized alert tones (OscillatorNode)" },
-  { name: "Tailwind CSS 4", desc: "Utility-first styling with dark mode" },
-  { name: "BroadcastChannel", desc: "Cross-tab real-time synchronization" },
+  { name: "Next.js 15", desc: "App Router, React 19, TypeScript 5.8 — modern full-stack framework", icon: Cpu },
+  { name: "MediaPipe", desc: "Google's on-device ML — hand & face landmark detection via WebAssembly at 30+ FPS", icon: Activity },
+  { name: "Web Speech API", desc: "Browser-native text-to-speech in 8 languages with queue management", icon: Volume2 },
+  { name: "Web Audio API", desc: "Synthesized alert tones using OscillatorNode for each gesture type", icon: Zap },
+  { name: "Tailwind CSS 4", desc: "Utility-first styling with custom dark theme and animations", icon: Sparkles },
+  { name: "BroadcastChannel", desc: "Cross-tab real-time synchronization for multi-screen setups", icon: Server },
 ];
 
 const ACCURACY_FEATURES = [
-  "Temporal smoothing: 12-frame window with 75% majority vote",
-  "Hold-time ramp: 800ms required for full confidence",
-  "Resting-state debounce: auto-raises threshold after 5+ rapid transitions",
-  "Multi-language TTS: 8 languages supported",
-  "10-second cooldown prevents repeated same-gesture alerts",
+  "Temporal smoothing: 12-frame window with 75% majority vote filters random noise",
+  "Hold-time ramp: 800ms required for full confidence — prevents momentary movements from triggering",
+  "Resting-state debounce: auto-raises threshold after 5+ rapid transitions in 10 seconds",
+  "Multi-language TTS: 8 languages with proper voice selection and fallback",
+  "10-second cooldown prevents repeated same-gesture alert spam",
   "Emergency alert with 10-second countdown and cancel capability",
+  "Separate audio alert tones for each gesture type (sine, square, sawtooth, triangle waveforms)",
+  "Hysteresis-based blink detection prevents false triggers from tracking noise",
 ];
 
 const USE_CASES = [
-  { title: "ICU & Critical Care", desc: "Intubated patients who cannot speak due to breathing tubes" },
-  { title: "Post-Surgery Recovery", desc: "Patients emerging from anesthesia with limited mobility" },
-  { title: "Stroke Rehabilitation", desc: "Individuals with aphasia or hemiparesis" },
-  { title: "ALS / MND Care", desc: "Progressive condition where movement becomes limited" },
-  { title: "Temporary Paralysis", desc: "Patients under neuromuscular blocking agents" },
-  { title: "Speech Therapy", desc: "Augmentative communication during recovery" },
+  { title: "ICU & Critical Care", desc: "Intubated patients who cannot speak due to breathing tubes or ventilation", icon: Heart },
+  { title: "Post-Surgery Recovery", desc: "Patients emerging from anesthesia with limited mobility and speech", icon: Activity },
+  { title: "Stroke Rehabilitation", desc: "Individuals with aphasia or hemiparesis regaining communication", icon: Heart },
+  { title: "ALS / MND Care", desc: "Progressive conditions where movement becomes increasingly limited", icon: Activity },
+  { title: "Temporary Paralysis", desc: "Patients under neuromuscular blocking agents needing to communicate", icon: Activity },
+  { title: "Speech Therapy", desc: "Augmentative and alternative communication during recovery", icon: Heart },
+];
+
+const VALUES = [
+  { title: "Privacy by Design", desc: "Zero data leaves the device. No servers, no accounts, no tracking. All AI runs locally via WebAssembly.", icon: Lock },
+  { title: "Zero Cost", desc: "Free and open source. No subscriptions, no expensive hardware — just a laptop with a webcam.", icon: Zap },
+  { title: "Universal Access", desc: "8 languages supported. Works in any modern browser. No installation required.", icon: Languages },
+  { title: "Hospital Grade", desc: "Temporal smoothing, hysteresis, debouncing, and cooldown systems ensure reliability in real-world conditions.", icon: ShieldCheck },
 ];
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white pt-24 pb-16">
+    <div className="min-h-screen bg-slate-950 pt-20 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-4">
-            <HiHeart className="w-4 h-4" />
+
+        {/* Hero */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium mb-4">
+            <Heart className="w-4 h-4" />
             About CareSpeak AI
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
-            Giving Every Patient a Voice
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-4">
+            Giving Every Patient{" "}
+            <span className="gradient-text">a Voice</span>
           </h1>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            Turning any laptop into an assistive communication device using on-device AI.
+            No servers. No expensive hardware. No setup.
+          </p>
         </motion.div>
 
         {/* Problem */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-20"
-        >
-          <div className="bg-gradient-to-br from-gray-50 to-blue-50/50 rounded-3xl p-8 md:p-12 border border-gray-100">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">The Problem</h2>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-3xl">
+        <motion.section variants={{ hidden: {}, visible: {} }} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-20">
+          <div className="bg-gradient-to-br from-slate-900 to-indigo-950/50 rounded-3xl p-8 md:p-12 border border-white/5">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">The Problem</h2>
+            <p className="text-slate-300 text-lg leading-relaxed max-w-3xl">
               Millions of hospitalized patients worldwide cannot communicate basic needs because they are intubated,
               paralyzed, or speech-impaired. A sip of water, a need for help, or a simple yes or no becomes a struggle.
               Nurses and caregivers are stretched thin and cannot always be at the bedside. Existing assistive
@@ -67,15 +79,10 @@ export default function AboutPage() {
         </motion.section>
 
         {/* Solution */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-20"
-        >
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-3xl p-8 md:p-12 border border-blue-100">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">The Solution</h2>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-3xl">
+        <motion.section variants={{ hidden: {}, visible: {} }} initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-20">
+          <div className="bg-gradient-to-br from-indigo-950/50 to-purple-950/30 rounded-3xl p-8 md:p-12 border border-white/5">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">The Solution</h2>
+            <p className="text-slate-300 text-lg leading-relaxed max-w-3xl">
               CareSpeak AI turns any laptop with a webcam into an assistive communication device. Using on-device AI
               (MediaPipe WebAssembly), it tracks hand gestures or eye movements in real-time and converts them into
               spoken voice alerts. No servers, no data leaves the device, and no expensive hardware is needed.
@@ -84,128 +91,104 @@ export default function AboutPage() {
         </motion.section>
 
         {/* Pipeline */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-20"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">The AI Pipeline</h2>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-20">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 text-center">The AI Pipeline</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { step: "1", title: "Camera Input", desc: "Webcam captures video at 640x480. MediaPipe locates 21 hand landmarks or 478 face landmarks per frame at 30+ FPS.", color: "blue" },
-              { step: "2", title: "Gesture Classification", desc: "Rule-based classifiers detect thumbs up/down, index-pinky, open palm, both-hands-open, gaze direction, and double-blinks with temporal smoothing.", color: "emerald" },
-              { step: "3", title: "Voice Output", desc: "Web Speech API announces the gesture in the patient&apos;s chosen language. HELP & EMERGENCY also trigger a synthesized alert tone.", color: "violet" },
+              { step: "1", title: "Camera Input", desc: "Webcam captures video at 640x480. MediaPipe locates 21 hand landmarks or 478 face landmarks per frame at 30+ FPS.", icon: Eye, color: "from-indigo-500 to-blue-600" },
+              { step: "2", title: "Gesture Classification", desc: "Rule-based classifiers detect thumbs up/down, index-pinky, open palm, both-hands-open, gaze direction, and double-blinks with temporal smoothing.", icon: Cpu, color: "from-purple-500 to-pink-600" },
+              { step: "3", title: "Voice Output", desc: "Web Speech API announces the gesture in the patient's chosen language. Each gesture also triggers a unique synthesized alert tone.", icon: Volume2, color: "from-emerald-500 to-teal-600" },
             ].map((s) => (
-              <div key={s.step} className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-sm ${
-                  s.color === "blue" ? "bg-blue-50 text-blue-600" :
-                  s.color === "emerald" ? "bg-emerald-50 text-emerald-600" :
-                  "bg-violet-50 text-violet-600"
-                }`}>
-                  <HiAcademicCap className="w-6 h-6" />
+              <motion.div key={s.step} variants={fadeUp} className="dashboard-card p-8">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center mb-4 shadow-lg`}>
+                  <s.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Step {s.step}: {s.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
-              </div>
+                <h3 className="text-lg font-bold text-white mb-2">Step {s.step}: {s.title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{s.desc}</p>
+              </motion.div>
             ))}
           </div>
         </motion.section>
 
-        {/* Privacy */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mb-20"
-        >
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-3xl p-8 md:p-12 border border-green-100">
-            <div className="flex items-center gap-3 mb-4">
-              <HiShieldCheck className="w-8 h-8 text-green-600" />
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Privacy First</h2>
-            </div>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-3xl">
-              All AI processing happens entirely in your browser via WebAssembly. No video frames, no landmarks, no
-              personal data are ever sent to a server. The system works offline after the initial model download. No
-              accounts, no tracking, no cloud dependencies.
-            </p>
-          </div>
-        </motion.section>
-
-        {/* Tech Stack */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mb-20"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-            <HiBolt className="w-7 h-7 text-blue-600" />
-            Technology Stack
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {TECH_STACK.map((tech) => (
-              <div key={tech.name} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all duration-300">
-                <h3 className="font-bold text-gray-900 mb-1">{tech.name}</h3>
-                <p className="text-gray-500 text-sm">{tech.desc}</p>
-              </div>
-            ))}
+        {/* Values */}
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-20">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 text-center">Our Principles</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {VALUES.map((v, i) => {
+              const Icon = v.icon;
+              return (
+                <motion.div key={i} variants={fadeUp} className="dashboard-card p-6">
+                  <Icon className="w-8 h-8 text-indigo-400 mb-3" />
+                  <h3 className="font-bold text-white mb-1">{v.title}</h3>
+                  <p className="text-slate-400 text-sm">{v.desc}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.section>
 
         {/* Accuracy */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mb-20"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Noise Reduction & Accuracy</h2>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-20">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
+            <ShieldCheck className="w-7 h-7 text-indigo-400" />
+            Noise Reduction &amp; Accuracy
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {ACCURACY_FEATURES.map((feat, i) => (
-              <div key={i} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <HiShieldCheck className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                <span className="text-gray-700 text-sm">{feat}</span>
-              </div>
+              <motion.div key={i} variants={fadeUp} className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/5">
+                <ShieldCheck className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
+                <span className="text-slate-300 text-sm">{feat}</span>
+              </motion.div>
             ))}
+          </div>
+        </motion.section>
+
+        {/* Tech Stack */}
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-20">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 flex items-center gap-3">
+            <Zap className="w-7 h-7 text-indigo-400" />
+            Technology Stack
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {TECH_STACK.map((tech, i) => {
+              const Icon = tech.icon;
+              return (
+                <motion.div key={i} variants={fadeUp} className="dashboard-card p-6">
+                  <Icon className="w-6 h-6 text-indigo-400 mb-3" />
+                  <h3 className="font-bold text-white mb-1">{tech.name}</h3>
+                  <p className="text-slate-400 text-sm">{tech.desc}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.section>
 
         {/* Use Cases */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="mb-20"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Hospital Use Cases</h2>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true }} className="mb-20">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 text-center">Hospital Use Cases</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {USE_CASES.map((uc) => (
-              <div key={uc.title} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all duration-300">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-3">
-                  <HiHeart className="w-5 h-5 text-blue-600" />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-1">{uc.title}</h3>
-                <p className="text-gray-500 text-sm">{uc.desc}</p>
-              </div>
-            ))}
+            {USE_CASES.map((uc, i) => {
+              const Icon = uc.icon;
+              return (
+                <motion.div key={i} variants={fadeUp} className="dashboard-card p-6">
+                  <Icon className="w-6 h-6 text-indigo-400 mb-3" />
+                  <h3 className="font-bold text-white mb-1">{uc.title}</h3>
+                  <p className="text-slate-400 text-sm">{uc.desc}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.section>
 
-        {/* Meta */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="text-center py-12 border-t border-gray-100"
+        {/* Footer */}
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+          className="text-center py-12 border-t border-white/5"
         >
-          <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
-            <HiGlobeAlt className="w-4 h-4" />
-            Built for Hackathon 2026 — Open source, free to use
+          <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
+            <Globe className="w-4 h-4" />
+            Open source &middot; Free to use &middot; Giving every patient a voice.
           </div>
-          <div className="mt-2 text-gray-300 text-xs">
-            CareSpeak AI v1.0.0 — Giving every patient a voice.
-          </div>
+          <div className="mt-2 text-slate-600 text-xs">CareSpeak AI v1.0.0</div>
         </motion.div>
       </div>
     </div>

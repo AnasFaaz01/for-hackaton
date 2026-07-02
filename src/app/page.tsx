@@ -1,111 +1,121 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { HiHandRaised, HiEye, HiSpeakerWave, HiShieldCheck, HiBolt, HiDevicePhoneMobile } from "react-icons/hi2";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { ArrowRight, Hand, Eye, Volume2, ShieldCheck, Zap, Heart, CheckCircle, Sparkles, Activity } from "lucide-react";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const } },
+};
+
+const stagger = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+};
 
 const FEATURES = [
-  {
-    icon: HiHandRaised,
-    title: "Hand Gesture Recognition",
-    desc: "Five distinct gestures — thumbs up, thumbs down, index+pinky, open palm, and both hands open — detected via on-device AI with temporal smoothing.",
-    gradient: "from-blue-500 to-blue-600",
-  },
-  {
-    icon: HiEye,
-    title: "Eye Movement Tracking",
-    desc: "Iris tracking and blink detection enable communication by gaze direction, double-blink, and long-blink.",
-    gradient: "from-emerald-500 to-emerald-600",
-  },
-  {
-    icon: HiSpeakerWave,
-    title: "Instant Voice Alerts",
-    desc: "Every gesture triggers a spoken alert so nurses hear the patient&apos;s needs without watching the screen.",
-    gradient: "from-violet-500 to-violet-600",
-  },
-  {
-    icon: HiShieldCheck,
-    title: "100% Private",
-    desc: "All AI runs in-browser via WebAssembly. No video, no data ever leaves your device.",
-    gradient: "from-cyan-500 to-cyan-600",
-  },
-  {
-    icon: HiBolt,
-    title: "Real-time Inference",
-    desc: "Sub-100ms latency. Optimized for CPU-only inference in Google Chrome on any modern laptop.",
-    gradient: "from-amber-500 to-amber-600",
-  },
-  {
-    icon: HiDevicePhoneMobile,
-    title: "No Setup Required",
-    desc: "Open Chrome, grant camera access, and start communicating. No installation, no training, no servers.",
-    gradient: "from-rose-500 to-rose-600",
-  },
+  { icon: Hand, title: "Hand Gesture Recognition", desc: "Five distinct gestures — thumbs up, thumbs down, peace sign, open palm, and both hands open — detected via on-device AI. Works in any lighting.", gradient: "from-indigo-500 to-violet-600" },
+  { icon: Eye, title: "Eye Movement Tracking", desc: "Iris tracking and blink detection let patients communicate by gaze direction, double-blinks, and mouth gestures — no hand movement required.", gradient: "from-emerald-500 to-teal-600" },
+  { icon: Volume2, title: "Instant Voice Alerts", desc: "Every gesture triggers a spoken alert in the patient's chosen language. Nurses hear the need without watching the screen.", gradient: "from-amber-500 to-orange-600" },
+  { icon: ShieldCheck, title: "100% Private & Secure", desc: "All AI runs in-browser via WebAssembly. No video, no data, no images ever leave the device. No servers, no accounts, no tracking.", gradient: "from-cyan-500 to-blue-600" },
+  { icon: Zap, title: "Real-time, No Lag", desc: "Sub-100ms inference latency. Optimized for CPU-only devices. Gesture to speech in under half a second.", gradient: "from-rose-500 to-pink-600" },
+  { icon: Heart, title: "No Setup, No Cost", desc: "Open Chrome, grant camera access, and start communicating. No installation, no training, no expensive hardware.", gradient: "from-violet-500 to-purple-600" },
 ];
 
-const GESTURE_PREVIEWS = [
-  { gesture: "YES", emoji: "👍", desc: "Thumbs Up" },
-  { gesture: "NO", emoji: "👎", desc: "Thumbs Down" },
-  { gesture: "HELP", emoji: "🤘", desc: "Index & Pinky Extended" },
-   { gesture: "PAUSE", emoji: "✊", desc: "Fist / Peace (✌️)" },
-  { gesture: "WATER", emoji: "🤲", desc: "Both Hands Open" },
+const STATS = [
+  { value: "478", label: "Face landmarks tracked per frame", icon: Eye },
+  { value: "21", label: "Hand landmarks tracked per hand", icon: Hand },
+  { value: "8", label: "Supported languages", icon: Volume2 },
+  { value: "30+", label: "Frames per second", icon: Zap },
 ];
 
-const EYE_PREVIEWS = [
-  { gesture: "YES", emoji: "👁️", desc: "Look Left" },
-  { gesture: "NO", emoji: "👁️", desc: "Look Right" },
-  { gesture: "HELP", emoji: "👁️", desc: "Double Blink" },
-  { gesture: "WATER", emoji: "👄", desc: "Open Mouth" },
-];
+function SectionHeading({ label, title, subtitle }: { label?: string; title: string; subtitle?: string }) {
+  return (
+    <div className="text-center mb-16">
+      {label && (
+        <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium mb-4">
+          <Sparkles className="w-3.5 h-3.5" />
+          {label}
+        </motion.div>
+      )}
+      <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+        {title}
+      </motion.h2>
+      {subtitle && (
+        <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
+          {subtitle}
+        </motion.p>
+      )}
+    </div>
+  );
+}
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
+function Section({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  return (
+    <section ref={ref} className={`py-24 ${className}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={stagger}
+        >
+          {children}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
 export default function LandingPage() {
   return (
-    <div className="overflow-hidden">
-      {/* Hero */}
-      <section className="relative min-h-[90vh] flex items-center justify-center bg-gradient-to-b from-blue-50 via-white to-white">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-blue-100/40 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-emerald-100/40 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-blue-50/30 blur-3xl" />
+    <div className="overflow-hidden bg-slate-950">
+
+      {/* ─── HERO ─── */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/hero-bg.jpg" alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 hero-overlay" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/20" />
+        </div>
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full bg-indigo-500/10 blur-[120px]" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-500/10 blur-[120px]" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-6 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              Hackathon 2026
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-sm font-medium mb-6 backdrop-blur-sm">
+              <Activity className="w-3.5 h-3.5" />
+              AI-Powered Assistive Communication
             </div>
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-tight tracking-tight"
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="text-5xl sm:text-6xl lg:text-8xl font-extrabold text-white leading-[1.05] tracking-tight"
           >
             Giving Every Patient{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400">
-              a Voice
-            </span>
+            <span className="gradient-text">a Voice</span>
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-6 text-lg sm:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto"
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-6 text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto"
           >
-            AI-powered communication for patients who cannot speak or move easily. Use hand gestures or eye movements to
-            express needs — instantly converted to speech.
+            AI-powered communication for patients who cannot speak or move easily. 
+            Use hand gestures or eye movements to express needs — 
+            instantly converted to speech. No setup. No servers. No cost.
           </motion.p>
 
           <motion.div
@@ -114,19 +124,19 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <a
-              href="/hand-mode"
-              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:translate-y-[-2px] transition-all duration-300"
+            <a href="/hand-mode"
+              className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-lg shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
             >
-              <HiHandRaised className="w-5 h-5" />
-              Start Hand Mode
+              <Hand className="w-5 h-5 transition-transform group-hover:-rotate-6" />
+              Try Hand Mode
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
             </a>
-            <a
-              href="/eye-mode"
-              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold text-lg shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:translate-y-[-2px] transition-all duration-300"
+            <a href="/eye-mode"
+              className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-semibold text-lg hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
             >
-              <HiEye className="w-5 h-5" />
-              Start Eye Mode
+              <Eye className="w-5 h-5 transition-transform group-hover:-rotate-6" />
+              Try Eye Mode
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
             </a>
           </motion.div>
 
@@ -134,216 +144,147 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-gray-400"
+            className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-slate-500"
           >
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              Works in Chrome
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              No server required
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              100% private
-            </span>
+            {["Works in Chrome", "No server required", "100% private"].map((text, i) => (
+              <span key={i} className="flex items-center gap-1.5">
+                <CheckCircle className="w-4 h-4 text-emerald-500/70" />
+                {text}
+              </span>
+            ))}
           </motion.div>
+        </div>
+      </section>
 
+      {/* ─── STATS ─── */}
+      <section className="relative -mt-20 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto"
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/60 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-300">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                  <HiHandRaised className="w-4 h-4 text-white" />
+            {STATS.map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <div key={i} className="dashboard-card p-6 text-center">
+                  <Icon className="w-6 h-6 text-indigo-400 mx-auto mb-3" />
+                  <div className="text-3xl font-bold text-white">{stat.value}</div>
+                  <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
                 </div>
-                <span className="font-semibold text-gray-700">Hand Gestures</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {GESTURE_PREVIEWS.map((g) => (
-                  <div key={g.gesture} className="text-center p-2 rounded-xl bg-gray-50/80 hover:bg-blue-50 hover:scale-105 transition-all duration-200">
-                    <div className="text-2xl mb-0.5">{g.emoji}</div>
-                    <div className="text-xs font-semibold text-blue-600">{g.gesture}</div>
-                    <div className="text-[10px] text-gray-400">{g.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/60 shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all duration-300">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-                  <HiEye className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-semibold text-gray-700">Eye Gestures</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {EYE_PREVIEWS.map((g) => (
-                  <div key={g.gesture} className="text-center p-2 rounded-xl bg-gray-50/80 hover:bg-emerald-50 hover:scale-105 transition-all duration-200">
-                    <div className="text-lg mb-0.5">{g.emoji}</div>
-                    <div className="text-xs font-semibold text-emerald-600 mb-0.5">{g.gesture}</div>
-                    <div className="text-[10px] text-gray-400">{g.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
 
-      {/* Problem Statement */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 text-sm font-medium mb-4">
-              The Problem
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight">
-              Millions of patients cannot communicate basic needs
-            </h2>
-            <p className="mt-4 text-gray-500 text-lg leading-relaxed">
-              Hospitalized patients who are intubated, paralyzed, or speech-impaired struggle to express pain, thirst, or
-              the need for help. Nurses cannot always be at the bedside. Existing solutions are expensive, complex, or
-              require significant movement.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-24 bg-gradient-to-b from-white to-blue-50/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-4">
-              The Solution
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-              How CareSpeak AI works
-            </h2>
-          </motion.div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {FEATURES.map((feat) => (
-              <motion.div
-                key={feat.title}
-                variants={itemVariants}
-                className="group relative bg-white rounded-2xl p-8 border border-gray-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300"
-              >
-                <div
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-5 shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1`}
-                >
-                  <feat.icon className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{feat.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{feat.desc}</p>
+      {/* ─── THE PROBLEM ─── */}
+      <Section className="bg-slate-950">
+        <SectionHeading
+          label="The Challenge"
+          title="Millions cannot communicate basic needs"
+          subtitle="Hospitalized patients who are intubated, paralyzed, or speech-impaired struggle to express pain, thirst, or the need for help. Nurses cannot always be at the bedside."
+        />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {[
+            { title: "ICU & Critical Care", desc: "Patients on ventilators who cannot speak due to breathing tubes", icon: Activity },
+            { title: "Stroke & Paralysis", desc: "Individuals with limited or no limb movement who need alternative communication", icon: Heart },
+            { title: "Post-Surgery Recovery", desc: "Patients emerging from anesthesia with temporary speech and mobility impairment", icon: Activity },
+          ].map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <motion.div key={i} variants={fadeUp} className="dashboard-card p-6">
+                <Icon className="w-8 h-8 text-indigo-400 mb-3" />
+                <h3 className="font-bold text-white mb-2">{item.title}</h3>
+                <p className="text-sm text-slate-400">{item.desc}</p>
               </motion.div>
-            ))}
-          </motion.div>
+            );
+          })}
         </div>
-      </section>
+      </Section>
 
-      {/* How it works */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-              Three simple steps
-            </h2>
-            <p className="mt-3 text-gray-500 text-lg">
-              From camera to voice alert in under 100ms
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              { step: "01", title: "Camera detects", desc: "MediaPipe tracks 21 hand landmarks or 478 face landmarks in real-time via WebAssembly", color: "blue" },
-              { step: "02", title: "AI classifies", desc: "Rule-based classifier with temporal smoothing identifies the gesture with confidence scoring", color: "emerald" },
-              { step: "03", title: "Voice speaks", desc: "Browser TTS announces the need aloud so caregivers hear it immediately", color: "violet" },
-            ].map((s, i) => (
-              <motion.div
-                key={s.step}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="text-center"
-              >
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm ${
-                  s.color === "blue" ? "bg-blue-50 border border-blue-100" :
-                  s.color === "emerald" ? "bg-emerald-50 border border-emerald-100" :
-                  "bg-violet-50 border border-violet-100"
-                }`}>
-                  <span className={`text-2xl font-bold ${
-                    s.color === "blue" ? "text-blue-600" :
-                    s.color === "emerald" ? "text-emerald-600" :
-                    "text-violet-600"
-                  }`}>{s.step}</span>
+      {/* ─── FEATURES ─── */}
+      <Section className="bg-slate-900/50">
+        <SectionHeading
+          label="The Solution"
+          title="How CareSpeak AI works"
+          subtitle="On-device AI that turns any laptop with a webcam into an assistive communication device."
+        />
+        <motion.div variants={stagger} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {FEATURES.map((feat, i) => {
+            const Icon = feat.icon;
+            return (
+              <motion.div key={i} variants={fadeUp} className="group dashboard-card p-8 card-hover">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-5 shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1`}>
+                  <Icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{s.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed max-w-xs mx-auto">{s.desc}</p>
+                <h3 className="text-lg font-bold text-white mb-2">{feat.title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{feat.desc}</p>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+            );
+          })}
+        </motion.div>
+      </Section>
 
-      {/* CTA */}
-      <section className="py-24 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 relative overflow-hidden">
+      {/* ─── HOW IT WORKS ─── */}
+      <Section>
+        <SectionHeading
+          title="Three simple steps"
+          subtitle="From camera to voice alert in under 500ms"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          {[
+            { num: "01", title: "Camera detects", desc: "MediaPipe tracks 21 hand landmarks or 478 face landmarks in real-time via WebAssembly at 30+ FPS", gradient: "from-indigo-500 to-blue-600" },
+            { num: "02", title: "AI classifies", desc: "Rule-based classifier with temporal smoothing identifies the gesture and assigns a confidence score", gradient: "from-purple-500 to-pink-600" },
+            { num: "03", title: "Voice speaks", desc: "Browser TTS announces the need aloud in the patient's chosen language — nurses hear it immediately", gradient: "from-emerald-500 to-teal-600" },
+          ].map((step, i) => (
+            <motion.div key={i} variants={fadeUp} className="text-center group">
+              <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${step.gradient} flex items-center justify-center mx-auto mb-5 shadow-xl shadow-indigo-500/10 group-hover:scale-110 transition-all duration-300`}>
+                <span className="text-2xl font-bold text-white">{step.num}</span>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">{step.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ─── CTA ─── */}
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-700 to-indigo-900" />
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-blue-500/20 blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-indigo-500/20 blur-3xl" />
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white/5 blur-[100px]" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-indigo-400/10 blur-[100px]" />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight">
               Ready to give every patient a voice?
             </h2>
-            <p className="mt-4 text-blue-200 text-lg">
+            <p className="mt-4 text-lg text-indigo-200">
               No installation. No setup. Just open Chrome and start communicating.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/hand-mode"
-                className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-white text-blue-700 font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
+              <a href="/hand-mode"
+                className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-white text-indigo-700 font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
-                <HiHandRaised className="w-5 h-5" />
+                <Hand className="w-5 h-5" />
                 Try Hand Mode
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
               </a>
-              <a
-                href="/eye-mode"
-                className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-blue-500/20 text-white border border-blue-400/30 font-semibold text-lg hover:bg-blue-500/30 hover:scale-105 active:scale-95 transition-all duration-300"
+              <a href="/eye-mode"
+                className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-white/10 text-white border border-white/20 font-semibold text-lg hover:bg-white/20 hover:border-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
-                <HiEye className="w-5 h-5" />
+                <Eye className="w-5 h-5" />
                 Try Eye Mode
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
               </a>
             </div>
           </motion.div>
